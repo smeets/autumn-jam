@@ -128,14 +128,6 @@ if [ ! -s "$patch" ] ; then
     exit 0
 fi
 
-# a patch has been created, notify the user and exit
-printf "\nThe following differences were found between the code to commit "
-printf "and the clang-format rules:\n\n"
-cat "$patch"
+# a patch has been created, apply it
+git apply $patch
 
-printf "\nYou can apply these changes with:\n git apply $patch\n"
-printf "(may need to be called from the root directory of your repository)\n"
-printf "Aborting commit. Apply changes and commit again or skip checking with"
-printf " --no-verify (not recommended).\n"
-
-exit 1
