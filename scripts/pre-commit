@@ -130,4 +130,7 @@ fi
 
 # a patch has been created, apply it
 git apply $patch
-
+git diff-index --cached --diff-filter=ACMR --name-only $against -- | while read file;
+do
+    git add "$file"
+done
