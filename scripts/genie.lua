@@ -4,16 +4,16 @@
 
 PROJ_DIR = path.getabsolute("..")
 SOLUTION_DIR = PROJ_DIR .. "/project"
-BIN_DIR = PROJ_DIR .. "bin"
+BIN_DIR = PROJ_DIR .. "/bin"
 
 function default_config()
 	configuration "Debug"
-		targetdir(BIN_DIR .. "Debug")
+		targetdir(BIN_DIR .. "/Debug")
 		defines { "DEBUG", "_DEBUG" }
 		flags { "Symbols", "WinMain" }
 
 	configuration "Release"
-		targetdir(BIN_DIR .. "Release")
+		targetdir(BIN_DIR .. "/Release")
 		defines { "NODEBUG" }
 		flags { "Optimize", "WinMain" }
 end
@@ -62,9 +62,9 @@ solution "autumn_jam"
 
 
 project "i_dont_know"
-	kind "StaticLib"
+	kind "ConsoleApp"
 
-	files { "" }
+	files { "../src/main.cpp" }
 
 	default_config()
 
