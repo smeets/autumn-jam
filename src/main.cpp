@@ -64,7 +64,7 @@ void init_platform_data(SDL_Window* window) {
 
 void init_bgfx(uint32_t width, uint32_t height) {
     /* NONE = Autoselect graphics adapter */
-    bgfx::init(bgfx::RendererType::OpenGL, BGFX_PCI_ID_NVIDIA);
+    bgfx::init(bgfx::RendererType::OpenGL, BGFX_PCI_ID_NONE);
 
     bgfx::reset(width, height, BGFX_RESET_NONE);
 
@@ -83,12 +83,7 @@ int main(/*int argc, char** argv*/) {
 
     init_platform_data(window);
 
-    bgfx::init(bgfx::RendererType::OpenGL, BGFX_PCI_ID_NVIDIA);
-
-    bgfx::reset(width, height, BGFX_RESET_NONE);
-
-    bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x303030ff, 1.0f,
-                       0);
+    init_bgfx(width, height);
 
     bool exit = false;
     SDL_Event event;
