@@ -2,20 +2,49 @@
 -- https://github.com/bkaradzic/bgfx/blob/master/scripts/genie.lua
 -- https://github.com/nem0/LumixEngine/blob/master/projects/genie.lua
 
-PROJ_DIR = path.getabsolute("..")
-SOLUTION_DIR = PROJ_DIR .. "/project"
-BIN_DIR = PROJ_DIR .. "/bin"
+MODULE_DIR	 = path.getabsolute("../")
+JAM_DIR		 = path.getabsolute("..")
 
-function default_config()
-	configuration "Debug"
-		targetdir(BIN_DIR .. "/Debug")
-		defines { "DEBUG", "_DEBUG" }
-		flags { "Symbols", "WinMain" }
+local AUTUMN_JAM_BUILD_DIR = path.join(JAM_DIR, ".build")
+local AUTUMN_JAM_THIRD_PARTY_DIR = path.join(JAM_DIR, "3rdparty")
 
-	configuration "Release"
-		targetdir(BIN_DIR .. "/Release")
-		defines { "NODEBUG" }
-		flags { "Optimize", "WinMain" }
+BX_DIR = os.getenv("BX_DIR")
+BIMG_DIR = os.getenv("BIMG_DIR")
+SDL2_DIR = os.getenv("SDL2_DIR")
+BGFX_DIR = os.getenv("BGFX_DIR")
+
+if not BGFX_DIR then
+	BGFX_DIR = path.getabsolute(path.join(JAM_DIR, "../bgfx"))
+end
+if not BX_DIR then
+	BX_DIR = path.getabsolute(path.join(JAM_DIR, "../bx"))
+end
+if not BIMG_DIR then
+	BIMG_DIR = path.getabsolute(path.join(JAM_DIR, "../bimg"))
+end
+
+if not os.isdir(BGFX_DIR)
+	or not os.isdir(BX_DIR)
+	or not os.isdir(BIMG_DIR)
+	or not os.isdir(SDL2_DIR) then
+	if not os.isdir(BGFX_DIR) then
+		print("bgfx not found at " .. BGFX_DIR)
+	end
+
+	if not os.isdir(BX_DIR) then
+		print("bx not found at " .. BX_DIR)
+	end
+
+	if not os.isdir(BIMG_DIR) then
+		print("bimg not found at " .. BIMG_DIR)
+	end
+
+	if not os.isdir(SDL2_DIR) then
+		print("sdl2 not found at " .. SDL2_DIR)
+	end
+
+	print("For more info see: https://bkaradzic.github.io/bgfx/build.html")
+	os.exit()
 end
 
 solution "autumn_jam"
@@ -31,14 +60,19 @@ solution "autumn_jam"
 			"-msse2",				 -- SSE2
 			"-no-canonical-prefixes", -- keep it relative
 		}
+
 	configuration { "linux-*", "x64" }
-		buildoptions { "-m64", }
+		buildoptions { "-m64" }
 		buildoptions_cpp {
-			"-std=c++14"
+			"-std=c++11"
+		}
+
+	configuration { "vs*" }
+		libdirs {
+				path.join(SDL2_DIR, "lib/win/x64")
 		}
 
 	configuration{}
-
 
 	configurations {
 		"Debug",
@@ -53,18 +87,65 @@ solution "autumn_jam"
 		"NoRTTI", 					-- Ha!
 		"NoEditAndContinue",		-- rip visual studio
 	}
-	location(SOLUTION_DIR)
+
+	location(path.join(AUTUMN_JAM_BUILD_DIR, _ACTION))
+
 	includedirs {
 		"../src",
 		"../external",
+		path.join(BGFX_DIR, "include"),
+		path.join(BX_DIR, "include")
 	}
-	language "C++"
 
+	language "C++"
+	startproject "i_dont_know"
+
+dofile (path.join(BX_DIR, "scripts/toolchain.lua"))
+if not toolchain(AUTUMN_JAM_BUILD_DIR, AUTUMN_JAM_THIRD_PARTY_DIR) then
+	return -- no action specified
+end
+
+
+function copyLib()
+end
 
 project "i_dont_know"
 	kind "ConsoleApp"
 
-	files { "../src/main.cpp" }
+	links {
+		"bx",
+		"bimg",
+		"bgfx",
+		"bimg_decode",
+		"SDL2"
+	}
 
-	default_config()
+	includedirs {
+		path.join(BX_DIR, 	"include"),
+		path.join(BIMG_DIR,	"include"),
+		path.join(BGFX_DIR, "include"),
+		path.join(BGFX_DIR, "3rdparty"),
+		path.join(SDL2_DIR, "include"),
+		AUTUMN_JAM_THIRD_PARTY_DIR
+	}
 
+	files {
+		path.join(JAM_DIR, "src/main.cpp")
+	}
+
+	configuration "Debug"
+		defines { "DEBUG", "_DEBUG" }
+		flags { "Symbols", "WinMain" }
+
+	configuration "Release"
+		defines { "NODEBUG" }
+		flags { "Optimize", "WinMain" }
+
+dofile(path.join(BGFX_DIR,   "scripts/bgfx.lua"))
+
+group "libs"
+bgfxProject("", "StaticLib", {})
+
+dofile(path.join(BX_DIR,   "scripts/bx.lua"))
+dofile(path.join(BIMG_DIR, "scripts/bimg.lua"))
+dofile(path.join(BIMG_DIR, "scripts/bimg_decode.lua"))
