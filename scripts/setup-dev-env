@@ -3,3 +3,5 @@ for project in bx, bgfx, bimg; do
   git clone https://github.com/bkaradzic/$project ../$project
 done
 ln -s ../../scripts/pre-commit .git/hooks/pre-commit
+
+tools/genie_linux --gcc=linux-gcc gmake
