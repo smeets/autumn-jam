@@ -101,9 +101,9 @@ project "i_dont_know"
 	kind "ConsoleApp"
 
 	links {
+		"bgfx",
 		"bx",
 		"bimg",
-		"bgfx",
 		"bimg_decode",
 		"SDL2",
         "GL"
