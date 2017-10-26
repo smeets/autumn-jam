@@ -1,18 +1,18 @@
-#include <SDL.h>
-#include <bgfx\bgfx.h>
+#include <SDL2/SDL.h>
+#include <bgfx/bgfx.h>
 #include <stdio.h>
 #include <stdlib.h>
 #undef main
 
-#if BX_PLATFORM_WINDOWS
-#define SDL_MAIN_HANDLED
-#endif // BX_PLATFORM_WINDOWS
+// #if BX_PLATFORM_WINDOWS
+// #define SDL_MAIN_HANDLED
+// #endif // BX_PLATFORM_WINDOWS
 
 #include <bx/os.h>
 
 BX_PRAGMA_DIAGNOSTIC_PUSH()
 BX_PRAGMA_DIAGNOSTIC_IGNORED_CLANG("-Wextern-c-compat")
-#include <SDL_syswm.h>
+#include <SDL2/SDL_syswm.h>
 BX_PRAGMA_DIAGNOSTIC_POP()
 
 #include <bgfx/platform.h>
@@ -21,7 +21,7 @@ BX_PRAGMA_DIAGNOSTIC_POP()
 #endif // defined(None)
 
 void error(const char* msg) {
-    printf(msg);
+    puts(msg);
     exit(EXIT_FAILURE);
 }
 
