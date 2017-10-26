@@ -47,7 +47,7 @@ solution "autumn_jam"
 			"-msse2",				 -- SSE2
 			"-no-canonical-prefixes", -- keep it relative
 		}
-        links {"X11"}
+        links {"X11", "pthread"}
 
 	configuration { "linux-*", "x64" }
 		buildoptions { "-m64" }
