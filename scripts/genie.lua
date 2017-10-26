@@ -47,6 +47,7 @@ solution "autumn_jam"
 			"-msse2",				 -- SSE2
 			"-no-canonical-prefixes", -- keep it relative
 		}
+        links {"X11"}
 
 	configuration { "linux-*", "x64" }
 		buildoptions { "-m64" }
@@ -104,7 +105,8 @@ project "i_dont_know"
 		"bimg",
 		"bgfx",
 		"bimg_decode",
-		"SDL2"
+		"SDL2",
+        "GL"
 	}
 
 	includedirs {
