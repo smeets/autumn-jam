@@ -10,7 +10,7 @@ local AUTUMN_JAM_THIRD_PARTY_DIR = path.join(JAM_DIR, "3rdparty")
 
 BX_DIR = os.getenv("BX_DIR") or path.getabsolute(path.join(JAM_DIR, "../bx"))
 BIMG_DIR = os.getenv("BIMG_DIR") or path.getabsolute(path.join(JAM_DIR, "../bimg"))
-SDL2_DIR = os.getenv("SDL2_DIR") or path.getabsolute(path.join(JAM_DIR, "../sdl2"))
+SDL2_DIR = os.getenv("SDL2_DIR")
 BGFX_DIR = os.getenv("BGFX_DIR") or path.getabsolute(path.join(JAM_DIR, "../bgfx"))
 
 function exit()
@@ -30,11 +30,6 @@ end
 
 if not os.isdir(BIMG_DIR) then
     print("bimg not found at " .. BIMG_DIR)
-    exit()
-end
-
-if not os.isdir(SDL2_DIR) then
-    print("sdl2 not found at " .. SDL2_DIR)
     exit()
 end
 
