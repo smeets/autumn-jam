@@ -13,6 +13,11 @@ BIMG_DIR = os.getenv("BIMG_DIR") or path.getabsolute(path.join(JAM_DIR, "../bimg
 SDL2_DIR = os.getenv("SDL2_DIR") or path.getabsolute(path.join(JAM_DIR, "../sdl2"))
 BGFX_DIR = os.getenv("BGFX_DIR") or path.getabsolute(path.join(JAM_DIR, "../bgfx"))
 
+function exit()
+    print("For more info see: https://bkaradzic.github.io/bgfx/build.html")
+	os.exit()
+end
+
 if not os.isdir(BGFX_DIR) then
     print("bgfx not found at " .. BGFX_DIR)
     exit()
@@ -33,10 +38,6 @@ if not os.isdir(SDL2_DIR) then
     exit()
 end
 
-function exit()
-    print("For more info see: https://bkaradzic.github.io/bgfx/build.html")
-	os.exit()
-end
 
 solution "autumn_jam"
 	configuration {"linux-*"}
