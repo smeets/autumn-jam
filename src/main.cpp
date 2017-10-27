@@ -4,10 +4,6 @@
 #include <stdlib.h>
 #undef main
 
-// #if BX_PLATFORM_WINDOWS
-// #define SDL_MAIN_HANDLED
-// #endif // BX_PLATFORM_WINDOWS
-
 #include <bx/os.h>
 
 BX_PRAGMA_DIAGNOSTIC_PUSH()
