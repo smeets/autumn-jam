@@ -1,0 +1,18 @@
+# make -C scripts/Makefile.linux
+.PHONY: err project build clean
+
+default: err
+
+err:
+	@echo "WTF"
+
+project:
+	tools/genie_linux --gcc=linux-gcc gmake
+	tools\\genie.exe vs2017
+
+build:
+	make -C ./.build/linux-64?/Makefile
+
+clean:
+	rm -r ./.build
+

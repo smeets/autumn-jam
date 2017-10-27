@@ -1,0 +1,20 @@
+# nmake /f scripts/Makefile.windows
+.PHONY: err project build clean
+
+default: err
+
+err:
+	@echo "WTF"
+
+project:
+	tools/genie.exe vs2017
+
+build:
+	@echo "something nmake?"
+
+open:
+	start .build/projects/vs2017/autumn_jam.sln
+
+clean:
+	@echo "Something something DEL /?"
+
