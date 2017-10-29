@@ -71,11 +71,10 @@ void init_bgfx(uint32_t width, uint32_t height) {
 int main(/*int argc, char** argv*/) {
     printf("hello");
 
-    SDL_Window* window;
     uint32_t width = 800;
     uint32_t height = 600;
 
-    window = init_window(width, height);
+    auto window = init_window(width, height);
 
     init_platform_data(window);
 
