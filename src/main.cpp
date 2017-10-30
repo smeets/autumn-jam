@@ -63,41 +63,61 @@ void init_bgfx(uint32_t width, uint32_t height) {
     bgfx::init(bgfx::RendererType::OpenGL, BGFX_PCI_ID_NONE);
 
     bgfx::reset(width, height, BGFX_RESET_NONE);
+    bgfx::setDebug(BGFX_DEBUG_TEXT);
 
     bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x303030ff, 1.0f,
                        0);
 }
 
 int main(/*int argc, char** argv*/) {
-    printf("hello");
-
     uint32_t width = 800;
     uint32_t height = 600;
+
+    printf("init\n");
 
     auto window = init_window(width, height);
 
     init_platform_data(window);
-
     init_bgfx(width, height);
 
     bool exit = false;
     SDL_Event event;
+    printf("running\n");
     while (!exit) {
         bgfx::setViewRect(0, 0, 0, uint16_t(width), uint16_t(height));
-        // bgfx::renderFrame()		// Crashes on main-thread check
         bgfx::touch(0);
-        bgfx::frame();
+
+        bgfx::dbgTextClear();
+        const bgfx::Stats* stats = bgfx::getStats();
+        bgfx::dbgTextPrintf(0, 0, 0x0f, "Window %dW x %dH px, backbuffer %dW x "
+                                        "%dH px, debug text %dW x %dH in "
+                                        "characters.",
+                            width, height, stats->width, stats->height,
+                            stats->textWidth, stats->textHeight);
 
         while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT) {
+            switch (event.type) {
+            case SDL_QUIT:
                 exit = true;
+                break;
+            case SDL_WINDOWEVENT:
+                if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
+                    width = uint32_t(event.window.data1);
+                    height = uint32_t(event.window.data2);
+                    bgfx::reset(width, height, BGFX_RESET_NONE);
+                }
+                break;
+            default:
                 break;
             }
         }
+
+        bgfx::frame();
     }
 
-    // while (bgfx::RenderFrame::NoContext != bgfx::renderFrame()) {};
+    printf("exit\n");
 
+    bgfx::shutdown();
     SDL_DestroyWindow(window);
     SDL_Quit();
     return 0;
