@@ -29,6 +29,15 @@ $ tree
   - this will create the `.build/projects` folder
  - now build using the generated project (e.g. `make`)
 
+## Shaders
+```bash
+export BIN_DIR = .build/path/to/exe/
+export PLATFORM = windows || linux
+mkdir -p $BIN_DIR/shaders/glsl
+tools/shaderc -f shaders/fs_cube.sc -o $BIN_DIR/shaders/glsl/fs_cube.bin -i ../bgfx/src --type fragment -platform $PLATFORM
+tools/shaderc -f shaders/vs_cube.sc -o $BIN_DIR/shaders/glsl/vs_cube.bin -i ../bgfx/src/ --type vertex -platform $PLATFORM
+```
+
 ```bash
 # makefile
 $ tools/genie_linux gmake

@@ -1,8 +1,11 @@
 #include <SDL2/SDL.h>
 #include <bgfx/bgfx.h>
+#include <bx/math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #undef main
+
+#include "cube.h"
 
 #include <bx/os.h>
 
@@ -80,18 +83,37 @@ int main(/*int argc, char** argv*/) {
     init_platform_data(window);
     init_bgfx(width, height);
 
+    CubeData data;
+    init_cube(data);
+
     bool exit = false;
     SDL_Event event;
     printf("running\n");
+    float at[3] = {0.0f, 0.0f, 0.0f};
+    float eye[3] = {0.0f, 0.0f, -35.0f};
     while (!exit) {
         bgfx::setViewRect(0, 0, 0, uint16_t(width), uint16_t(height));
         bgfx::touch(0);
+        float view[16];
+        bx::mtxLookAt(view, eye, at);
+
+        float proj[16];
+        // bx::mtxOrtho
+        bx::mtxProj(proj, 60.0f, float(width) / float(height), 0.1f, 100.0f,
+                    bgfx::getCaps()->homogeneousDepth);
+        bgfx::setViewTransform(0, view, proj);
+
+        draw_cube(data);
+
+        // Set view 0 default viewport.
+        bgfx::setViewRect(0, 0, 0, uint16_t(width), uint16_t(height));
 
         bgfx::dbgTextClear();
         const bgfx::Stats* stats = bgfx::getStats();
-        bgfx::dbgTextPrintf(0, 0, 0x0f, "Window %dW x %dH px, backbuffer %dW x "
-                                        "%dH px, debug text %dW x %dH in "
-                                        "characters.",
+        bgfx::dbgTextPrintf(0, 0, 0x0f,
+                            "Window %dW x %dH px, backbuffer %dW x "
+                            "%dH px, debug text %dW x %dH in "
+                            "characters.",
                             width, height, stats->width, stats->height,
                             stats->textWidth, stats->textHeight);
 

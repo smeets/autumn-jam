@@ -74,7 +74,6 @@ solution "autumn_jam"
 
 	platforms { "x64" }
 	flags {
-		"FatalWarnings",
 		"NoPCH",
 		"NoExceptions",
 		"NoRTTI", 					-- Ha!
@@ -123,7 +122,8 @@ project "i_dont_know"
 	}
 
 	files {
-		path.join(JAM_DIR, "src/main.cpp")
+		path.join(JAM_DIR, "src/main.cpp"),
+		path.join(JAM_DIR, "src/*")
 	}
 
 	configuration "Debug"

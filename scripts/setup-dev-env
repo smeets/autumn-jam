@@ -1,7 +1,8 @@
 #!/bin/bash
-for project in bx, bgfx, bimg; do
+for project in bx bgfx bimg; do
   git clone https://github.com/bkaradzic/$project ../$project
 done
+rm .git/hooks/pre-commit
 ln -s ../../scripts/pre-commit .git/hooks/pre-commit
 
 tools/genie_linux --gcc=linux-gcc gmake
