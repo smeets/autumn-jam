@@ -1,13 +1,11 @@
 #include "cube.h"
 #include "hello.h"
+#include <SDL2/SDL_keycode.h>
 #include <bgfx/bgfx.h>
 #include <bx/bx.h>
 #include <bx/file.h>
 #include <bx/math.h>
-#include <bx/readerwriter.h>
-#include <stdint.h>
 #include <stdio.h>
-#include <string>
 
 bgfx::VertexDecl PosColorVertex::decl;
 static PosColorVertex cubeVertices[] = {
@@ -44,18 +42,51 @@ void init_cube(CubeData& data) {
     data.program = loadProgram(&reader, "vs_cube", "fs_cube");
 }
 static float time = 0;
+static float pos[3] = {0, 0, 0};
+static float vel[3] = {0, 0, 0};
+static float speed = 400;
+static float jump_impulse = 18;
+static float gravity = -16;
+static float timestep = 0.016f;
+static bool grounded = false;
 
-void draw_cube(CubeData& data) {
-    time = time + 0.001f;
+void draw_cube(CubeData& data, const uint8_t* keyboard_state) {
+    time = time + timestep;
     float xx = 1;
     float yy = 1;
+    float input[2] = {0, 0};
+
+    if (keyboard_state[SDL_SCANCODE_RIGHT])
+        input[0] += 1;
+
+    if (keyboard_state[SDL_SCANCODE_LEFT])
+        input[0] -= 1;
+
+    if (keyboard_state[SDL_SCANCODE_UP] && grounded) {
+        vel[1] = jump_impulse;
+        grounded = false;
+    }
+
+    vel[0] += input[0] * speed * timestep;
+    vel[0] *= 0.80f;
+
+    if (!grounded)
+        vel[1] += gravity * timestep;
+
+    for (size_t i = 0; i < 2; i++)
+        pos[i] += vel[i] * timestep;
+
+    if (pos[1] <= -1) {
+        pos[1] = -1;
+        vel[1] = 0;
+        grounded = true;
+    }
 
     float mtx[16];
-    // bx::mtxRotateXY(mtx, time + xx * 0.21f, time + yy * 0.37f);
-    bx::mtxScale(mtx, (sin(time) + 1) * 2, (sin(time) + 1) * 2, 1);
-    // mtx[12] = -15.0f + float(xx) * 3.0f;
-    // mtx[13] = -15.0f + float(yy) * 3.0f;
-    // mtx[14] = 0.0f;
+    bx::mtxIdentity(mtx);
+    mtx[12] = pos[0];
+    mtx[13] = pos[1];
+    mtx[14] = pos[2];
 
     // Set model matrix for rendering.
     bgfx::setTransform(mtx);

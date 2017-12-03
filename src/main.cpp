@@ -65,7 +65,7 @@ void init_bgfx(uint32_t width, uint32_t height) {
     /* NONE = Autoselect graphics adapter */
     bgfx::init(bgfx::RendererType::OpenGL, BGFX_PCI_ID_NONE);
 
-    bgfx::reset(width, height, BGFX_RESET_NONE);
+    bgfx::reset(width, height, BGFX_RESET_VSYNC);
     bgfx::setDebug(BGFX_DEBUG_TEXT);
 
     bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x303030ff, 1.0f,
@@ -92,6 +92,29 @@ int main(/*int argc, char** argv*/) {
     float at[3] = {0.0f, 0.0f, 0.0f};
     float eye[3] = {0.0f, 0.0f, -35.0f};
     while (!exit) {
+        while (SDL_PollEvent(&event)) {
+            switch (event.type) {
+            case SDL_QUIT:
+                exit = true;
+                break;
+            case SDL_WINDOWEVENT:
+                if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
+                    width = uint32_t(event.window.data1);
+                    height = uint32_t(event.window.data2);
+                    bgfx::reset(width, height, BGFX_RESET_VSYNC);
+                }
+                break;
+            case SDL_KEYDOWN:
+            case SDL_KEYUP:
+                printf("key event: %s\n", SDL_GetKeyName(event.key.keysym.sym));
+                break;
+            default:
+                break;
+            }
+        }
+
+        const Uint8* keyboard_state = SDL_GetKeyboardState(NULL);
+
         bgfx::setViewRect(0, 0, 0, uint16_t(width), uint16_t(height));
         bgfx::touch(0);
         float view[16];
@@ -103,7 +126,7 @@ int main(/*int argc, char** argv*/) {
                     bgfx::getCaps()->homogeneousDepth);
         bgfx::setViewTransform(0, view, proj);
 
-        draw_cube(data);
+        draw_cube(data, keyboard_state);
 
         // Set view 0 default viewport.
         bgfx::setViewRect(0, 0, 0, uint16_t(width), uint16_t(height));
@@ -111,28 +134,10 @@ int main(/*int argc, char** argv*/) {
         bgfx::dbgTextClear();
         const bgfx::Stats* stats = bgfx::getStats();
         bgfx::dbgTextPrintf(0, 0, 0x0f,
-                            "Window %dW x %dH px, backbuffer %dW x "
-                            "%dH px, debug text %dW x %dH in "
-                            "characters.",
-                            width, height, stats->width, stats->height,
-                            stats->textWidth, stats->textHeight);
+                            "Window %dW x %dH px, backbuffer %dW x %dH px.",
+                            width, height, stats->width, stats->height);
 
-        while (SDL_PollEvent(&event)) {
-            switch (event.type) {
-            case SDL_QUIT:
-                exit = true;
-                break;
-            case SDL_WINDOWEVENT:
-                if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
-                    width = uint32_t(event.window.data1);
-                    height = uint32_t(event.window.data2);
-                    bgfx::reset(width, height, BGFX_RESET_NONE);
-                }
-                break;
-            default:
-                break;
-            }
-        }
+        bgfx::dbgTextPrintf(0, 1, 0x0f, "Controls: Left, Right, Up = Jump");
 
         bgfx::frame();
     }

@@ -21,4 +21,4 @@ struct PosColorVertex {
 };
 
 void init_cube(CubeData& data);
-void draw_cube(CubeData& data);
+void draw_cube(CubeData& data, const uint8_t* keyboard_state);
