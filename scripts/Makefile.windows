@@ -1,20 +1,36 @@
 # nmake /f scripts/Makefile.windows
-.PHONY: err project build clean
+.PHONY: project build clean shaders start
 
-default: err
+PROJECT_DIR = .build\projects\vs2017
+BUILD_DIR = .build\win64_vs2017
+TARGET_DIR = $(BUILD_DIR)\bin
+SHADER_DIR = $(TARGET_DIR)\shaders
+UNIX_DIR = .build/win64_vs2017/bin/
 
-err:
-	@echo "WTF"
+project: scripts/genie.lua
+	tools\genie.exe vs2017
 
-project:
-	tools/genie.exe vs2017
-
-build:
-	@echo "something nmake?"
+build: project
+	msbuild .build/projects/vs2017/autumn_jam.sln
 
 open:
 	start .build/projects/vs2017/autumn_jam.sln
 
+$(SHADER_DIR):
+	mkdir $(SHADER_DIR)
+
+$(SHADER_DIR)\glsl:
+	mkdir $(SHADER_DIR)\glsl
+
+shaders: $(SHADER_DIR) $(SHADER_DIR)\glsl
+	@echo compiling glsl shaders...
+	tools\shaderc.exe -f shaders/fs_cube.sc -o $(UNIX_DIR)/shaders/glsl/fs_cube.bin -i ../bgfx/src --type fragment --platform windows
+	tools\shaderc.exe -f shaders/vs_cube.sc -o $(UNIX_DIR)/shaders/glsl/vs_cube.bin -i ../bgfx/src/ --type vertex --platform windows
+
+start: build shaders
+	cd .build/win64_vs2017/bin/
+	i_dont_knowDebug.exe
+
 clean:
-	@echo "Something something DEL /?"
+	rmdir /s /q $(BUILD_DIR)
 

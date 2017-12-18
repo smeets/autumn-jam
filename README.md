@@ -23,25 +23,35 @@ $ tree
  - [SDL2](http://www.libsdl.org/download-2.0.php)
 
 ## Building
- - `git clone` dependencies into same parent folder as this repo. or use env. vars `{BGFX,BX,BIMG}_DIR` to specify the paths
- - install SDL2 (prebuilt windows lib is included)
- - generate project files: `cd autumn-jam && ./tools/genie <build-system>`
-  - this will create the `.build/projects` folder
- - now build using the generated project (e.g. `make`)
+ - `git clone https://github.com/smeets/autumn-jam`
+ - get dependencies if you need (clone into same parent folder as this repo):
+  - `git clone https://github.com/bkaradzic/bx`
+  - `git clone https://github.com/bkaradzic/bgfx`
+  - `git clone https://github.com/bkaradzic/bimg`,
+ - or use environment vars `{BGFX,BX,BIMG}_DIR` to specify the paths
+ - install SDL2 (only linux/mac, windows is included)
+
+### Windows
+There exists a `Makefile.windows` with: `project`, `build`, `start`, `shaders` and `clean` targets.
+
+ - `cd autumn-jam`
+ - Generate vs2017 sources: `nmake /f scripts\Makefile.windows project`
+ - Run the program: `nmake /f scripts\Makefile.windows start`
+
+### Linux/Mac
+```bash
+$ cd autumn-jam
+# generate makefile in .build\projects\linux64_gmake (?)
+$ tools/genie_linux gmake
+```
 
 ## Shaders
+Shaders should be compiled by a makefile, see the `Makefile.windows`.
+
 ```bash
 export BIN_DIR = .build/path/to/exe/
 export PLATFORM = windows || linux
 mkdir -p $BIN_DIR/shaders/glsl
-tools/shaderc -f shaders/fs_cube.sc -o $BIN_DIR/shaders/glsl/fs_cube.bin -i ../bgfx/src --type fragment -platform $PLATFORM
-tools/shaderc -f shaders/vs_cube.sc -o $BIN_DIR/shaders/glsl/vs_cube.bin -i ../bgfx/src/ --type vertex -platform $PLATFORM
-```
-
-```bash
-# makefile
-$ tools/genie_linux gmake
-
-# visual studio
-$ tools\\genie.exe vs2017
+tools/shaderc -f shaders/fs_cube.sc -o $BIN_DIR/shaders/glsl/fs_cube.bin -i ../bgfx/src --type fragment --platform $PLATFORM
+tools/shaderc -f shaders/vs_cube.sc -o $BIN_DIR/shaders/glsl/vs_cube.bin -i ../bgfx/src/ --type vertex --platform $PLATFORM
 ```
