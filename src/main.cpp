@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #undef main
 
+#include "core/camera.h"
 #include "cube.h"
 
 #include <bx/os.h>
@@ -90,7 +91,7 @@ int main(/*int argc, char** argv*/) {
     SDL_Event event;
     printf("running\n");
     float at[3] = {0.0f, 0.0f, 0.0f};
-    float eye[3] = {0.0f, 0.0f, -35.0f};
+    Camera camera(10, float(width), float(height), 0.1f, 1000.0f);
     while (!exit) {
         while (SDL_PollEvent(&event)) {
             switch (event.type) {
@@ -102,6 +103,7 @@ int main(/*int argc, char** argv*/) {
                     width = uint32_t(event.window.data1);
                     height = uint32_t(event.window.data2);
                     bgfx::reset(width, height, BGFX_RESET_VSYNC);
+                    camera.resize(float(width), float(height));
                 }
                 break;
             case SDL_KEYDOWN:
@@ -118,13 +120,9 @@ int main(/*int argc, char** argv*/) {
         bgfx::setViewRect(0, 0, 0, uint16_t(width), uint16_t(height));
         bgfx::touch(0);
         float view[16];
-        bx::mtxLookAt(view, eye, at);
+        bx::mtxLookAt(view, camera.eye, at);
 
-        float proj[16];
-        // bx::mtxOrtho
-        bx::mtxProj(proj, 60.0f, float(width) / float(height), 0.1f, 100.0f,
-                    bgfx::getCaps()->homogeneousDepth);
-        bgfx::setViewTransform(0, view, proj);
+        bgfx::setViewTransform(0, view, camera.proj);
 
         draw_cube(data, keyboard_state);
 
