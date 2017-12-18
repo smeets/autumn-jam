@@ -123,7 +123,7 @@ project "i_dont_know"
 
 	files {
 		path.join(JAM_DIR, "src/main.cpp"),
-		path.join(JAM_DIR, "src/*")
+		path.join(JAM_DIR, "src/**")
 	}
 
 	configuration "Debug"
@@ -136,6 +136,9 @@ project "i_dont_know"
 
 	configuration { "linux-*" }
 		links { "GL" }
+
+	configuration { "vs*" }
+		debugdir(path.join(AUTUMN_JAM_BUILD_DIR, "win64_" .. _ACTION, "bin"))
 
 dofile(path.join(BGFX_DIR,   "scripts/bgfx.lua"))
 
