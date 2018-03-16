@@ -4,15 +4,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "content/character.h"
 #include "core/camera.h"
-#include "cube.h"
 #include "game.h"
 
-void State::enter() { init_cube(cube[0]); }
+void State::enter() { players[0].init("/content/character/"); }
 
 State* State::update(float dt) {
     const Uint8* keyboard_state = SDL_GetKeyboardState(NULL);
-    draw_cube(cube[0], keyboard_state);
+    players[0].update(dt, keyboard_state);
+    players[0].draw();
     return this;
 }
 

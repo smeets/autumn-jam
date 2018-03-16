@@ -1,13 +1,13 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include "content/character.h"
 #include "core/camera.h"
-#include "cube.h"
 
 struct Player {};
 
 struct State {
-    CubeData cube[4];
+    Content::Character players[4];
 
   public:
     void enter();

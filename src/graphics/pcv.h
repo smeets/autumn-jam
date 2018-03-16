@@ -1,11 +1,7 @@
 #pragma once
 #include <bgfx/bgfx.h>
 
-struct CubeData {
-    bgfx::VertexBufferHandle vbh;
-    bgfx::IndexBufferHandle ibh;
-    bgfx::ProgramHandle program;
-};
+namespace Graphics {
 
 struct PosColorVertex {
     float x, y, z;
@@ -20,6 +16,4 @@ struct PosColorVertex {
 
     static bgfx::VertexDecl decl;
 };
-
-void init_cube(CubeData& data);
-void draw_cube(CubeData& data, const uint8_t* keyboard_state);
+}
