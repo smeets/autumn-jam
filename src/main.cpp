@@ -5,9 +5,7 @@
 #include <stdlib.h>
 #undef main
 
-#include "core/camera.h"
-#include "cube.h"
-
+#include "game.h"
 #include <bx/os.h>
 
 BX_PRAGMA_DIAGNOSTIC_PUSH()
@@ -84,57 +82,16 @@ int main(/*int argc, char** argv*/) {
     init_platform_data(window);
     init_bgfx(width, height);
 
-    CubeData data;
-    init_cube(data);
-
     bool exit = false;
-    SDL_Event event;
     printf("running\n");
-    float at[3] = {0.0f, 0.0f, 0.0f};
-    Camera camera(10, float(width), float(height), 0.1f, 1000.0f);
+
+    Game game;
+    game.init();
+
     while (!exit) {
-        while (SDL_PollEvent(&event)) {
-            switch (event.type) {
-            case SDL_QUIT:
-                exit = true;
-                break;
-            case SDL_WINDOWEVENT:
-                if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
-                    width = uint32_t(event.window.data1);
-                    height = uint32_t(event.window.data2);
-                    bgfx::reset(width, height, BGFX_RESET_VSYNC);
-                    camera.resize(float(width), float(height));
-                }
-                break;
-            case SDL_KEYDOWN:
-            case SDL_KEYUP:
-                printf("key event: %s\n", SDL_GetKeyName(event.key.keysym.sym));
-                break;
-            default:
-                break;
-            }
-        }
-
-        const Uint8* keyboard_state = SDL_GetKeyboardState(NULL);
-
-        bgfx::setViewRect(0, 0, 0, uint16_t(width), uint16_t(height));
-        bgfx::touch(0);
-        float view[16];
-        bx::mtxLookAt(view, camera.eye, at);
-
-        bgfx::setViewTransform(0, view, camera.proj);
-
-        draw_cube(data, keyboard_state);
-
-        // Set view 0 default viewport.
-        bgfx::setViewRect(0, 0, 0, uint16_t(width), uint16_t(height));
+        exit = game.update(0.016f);
 
         bgfx::dbgTextClear();
-        const bgfx::Stats* stats = bgfx::getStats();
-        bgfx::dbgTextPrintf(0, 0, 0x0f,
-                            "Window %dW x %dH px, backbuffer %dW x %dH px.",
-                            width, height, stats->width, stats->height);
-
         bgfx::dbgTextPrintf(0, 1, 0x0f, "Controls: Left, Right, Up = Jump");
 
         bgfx::frame();
@@ -142,6 +99,7 @@ int main(/*int argc, char** argv*/) {
 
     printf("exit\n");
 
+    game.reset();
     bgfx::shutdown();
     SDL_DestroyWindow(window);
     SDL_Quit();

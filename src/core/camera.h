@@ -1,3 +1,4 @@
+#pragma once
 #include <bx/math.h>
 
 struct Camera {
