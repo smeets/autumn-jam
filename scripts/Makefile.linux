@@ -1,18 +1,33 @@
 # make -C scripts/Makefile.linux
-.PHONY: err project build clean
+.PHONY: project build clean shaders start
 
-default: err
+PROJECT_DIR = ./.build/projects/gmake-linux
+PLATFORM = linux64_gcc
+BUILD_DIR = ./.build/$(PLATFORM)
+TARGET_DIR = $(BUILD_DIR)/bin
+SHADER_DIR = $(TARGET_DIR)/shaders/glsl
+SHADERC = ../bgfx/.build/$(PLATFORM)/bin/shadercRelease
 
-err:
-	@echo "WTF"
-
-project:
+project: scripts/genie.lua
 	tools/genie_linux --gcc=linux-gcc gmake
-	tools\\genie.exe vs2017
 
-build:
-	make -C ./.build/linux-64?/Makefile
+build: project
+	make -C $(PROJECT_DIR)
 
+$(SHADERC):
+	cd ../bgfx
+	make shaderc
+
+$(SHADER_DIR):
+	mkdir -p $(SHADER_DIR)
+
+shaders: $(SHADERC) $(SHADER_DIR)
+	@echo compiling glsl shaders...
+	$(SHADERC) -f shaders/fs_cube.sc -o $(SHADER_DIR)/fs_cube.bin -i ../bgfx/src --type fragment --platform linux
+	$(SHADERC) -f shaders/vs_cube.sc -o $(SHADER_DIR)/vs_cube.bin -i ../bgfx/src --type vertex --platform linux
+
+start: build shaders
+	cd $(TARGET_DIR) && ./i_dont_knowDebug #every line is independent
 clean:
-	rm -r ./.build
+	rm -r $(BUILD_DIR)
 
