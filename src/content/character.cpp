@@ -17,12 +17,24 @@ static uint16_t cubeTriStrip[] = {
 
 using namespace Content;
 
+double sign(double x) {
+    double eps = 1e-16;
+    if (x > eps) return 1.0;
+    else if (x < -eps) return -1.0;
+    return 0.0;
+}
+double clamp(double x, double limit) {
+    if(x > limit) return limit;
+    else if (x < -limit) return -limit;
+    else return x;
+}
+
 void Character::init(const char* path) {
     for (size_t i = 0; i < 3; i++) {
         position[i] = 0.0f;
         velocity[i] = 0.0f;
     }
-    grounded = false;
+    state = JUMPING;
 
     Graphics::PosColorVertex::init();
 
@@ -51,35 +63,60 @@ void Character::draw() {
 }
 
 static float SPEED = 400;
+static float SPEED_MAX = 10;
 static float GRAVITY = -16;
 static float JUMP = 18;
 void Character::update(float dt, const uint8_t* keyboard_state) {
-    float input[2] = {0, 0};
+    int input[2] = {0, 0};
 
-    if (keyboard_state[SDL_SCANCODE_RIGHT])
-        input[0] += 1;
-
-    if (keyboard_state[SDL_SCANCODE_LEFT])
-        input[0] -= 1;
-
-    if (keyboard_state[SDL_SCANCODE_UP] && grounded) {
-        velocity[1] = JUMP;
-        grounded = false;
+    if (keyboard_state[SDL_SCANCODE_RIGHT]) {
+        input[0] = 1;
+    } else if (keyboard_state[SDL_SCANCODE_LEFT]) {
+        input[0] = -1;
+    } else {
+	input[0] = 0;
     }
 
-    velocity[0] += input[0] * SPEED * dt;
-    velocity[0] *= 0.8f;
+    if (keyboard_state[SDL_SCANCODE_UP] && state == GROUNDED) {
+        velocity[1] = JUMP;
+        state = JUMPING;
+    }
 
-    if (!grounded)
-        velocity[1] += GRAVITY * dt;
+    if (state == SWINGING) {
+        // accelerating like an ideal pendulum
+    }
+
+    if(state == GROUNDED || state == JUMPING) {
+	if (input[0] != 0) {
+	    acceleration[0] = input[0] * SPEED; // input force
+	} else {
+	    acceleration[0] = 0;
+	}
+    }
+
+    if (state == JUMPING) {
+        acceleration[1] = GRAVITY;
+    }
+
+    velocity[0] += acceleration[0] * dt;
+    velocity[0] += sign(velocity[0])*GRAVITY * dt; // friction
+    velocity[1] += acceleration[1] * dt;
+    velocity[0] = clamp(velocity[0], SPEED_MAX);
 
     position[0] += velocity[0] * dt;
     position[1] += velocity[1] * dt;
 
-    if (position[1] <= -1) {
+
+    bool become_grounded = position[1] <= -1;
+
+    if (become_grounded) {
         position[1] = -1;
         velocity[1] = 0;
-        grounded = true;
+        acceleration[1] = 0;
+    }
+
+    if (become_grounded) {
+        state = GROUNDED;
     }
 }
 

@@ -6,10 +6,12 @@
 
 namespace Content {
 
+typedef enum {GROUNDED, JUMPING, SWINGING} CharacterState;
 struct Character {
     float position[3];
     float velocity[3];
-    bool grounded;
+    float acceleration[3];
+    CharacterState state;
 
     bgfx::VertexBufferHandle vbh;
     bgfx::IndexBufferHandle ibh;
