@@ -50,7 +50,7 @@ static void* loadMem(bx::FileReaderI* _reader, bx::AllocatorI* _allocator,
     return NULL;
 }
 
-static bgfx::ShaderHandle loadShader(bx::FileReaderI* _reader,
+bgfx::ShaderHandle loadShader(bx::FileReaderI* _reader,
                                      const char* _name) {
     char filePath[512];
 
