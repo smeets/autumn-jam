@@ -1,5 +1,8 @@
 #include "character.h"
+#include <stdio.h>
 #include "graphics/pcv.h"
+#include "physics/line.h"
+#include "core/curve.h"
 #include "hello.h"
 #include <SDL2/SDL.h>
 #include <bx/file.h>
@@ -30,11 +33,7 @@ double clamp(double x, double limit) {
 }
 
 void Character::init(const char* path) {
-    for (size_t i = 0; i < 3; i++) {
-        position[i] = 0.0f;
-        velocity[i] = 0.0f;
-    }
-    state = JUMPING;
+    reset();
 
     Graphics::PosColorVertex::init();
 
@@ -62,67 +61,32 @@ void Character::draw() {
     bgfx::submit(0, program);
 }
 
-static float SPEED = 400;
-static float SPEED_MAX = 10;
-static float GRAVITY = -16;
-static float JUMP = 18;
-void Character::update(float dt, const uint8_t* keyboard_state) {
-    int input[2] = {0, 0};
-
-    if (keyboard_state[SDL_SCANCODE_RIGHT]) {
-        input[0] = 1;
-    } else if (keyboard_state[SDL_SCANCODE_LEFT]) {
-        input[0] = -1;
-    } else {
-	input[0] = 0;
+void Character::sample(float t) {
+    f32 s = movement.sample(t);
+    LineSegment* next = current_segment->lerp(&s, (f32*)&position);
+    if (next != current_segment) {
+        movement.t0 = t + 0.016f;
+        movement.t1 = t + 0.016f + 1.0f;
+        printf("s=%f,t=%f\n", movement.sample(t), t);
+        printf("(%f,%f) -> (%f,%f)\n", 
+            current_segment->x.p, 
+            current_segment->y.p, 
+            next->x.p + next->x.d, 
+            next->y.p + next->y.d);
+        current_segment = next;
     }
+}
 
-    if (keyboard_state[SDL_SCANCODE_UP] && state == GROUNDED) {
-        velocity[1] = JUMP;
-        state = JUMPING;
+void Character::update(float t, const uint8_t* keyboard_state) {
+    bool jump = false;
+    if (keyboard_state[SDL_SCANCODE_UP]) {
+        jump = true;
     }
-
-    if (state == SWINGING) {
-        // accelerating like an ideal pendulum
-    }
-
-    if(state == GROUNDED || state == JUMPING) {
-	if (input[0] != 0) {
-	    acceleration[0] = input[0] * SPEED; // input force
-	} else {
-	    acceleration[0] = 0;
-	}
-    }
-
-    if (state == JUMPING) {
-        acceleration[1] = GRAVITY;
-    }
-
-    velocity[0] += acceleration[0] * dt;
-    velocity[0] += sign(velocity[0])*GRAVITY * dt; // friction
-    velocity[1] += acceleration[1] * dt;
-    velocity[0] = clamp(velocity[0], SPEED_MAX);
-
-    position[0] += velocity[0] * dt;
-    position[1] += velocity[1] * dt;
-
-
-    bool become_grounded = position[1] <= -1;
-
-    if (become_grounded) {
-        position[1] = -1;
-        velocity[1] = 0;
-        acceleration[1] = 0;
-    }
-
-    if (become_grounded) {
-        state = GROUNDED;
-    }
+    sample(t);
 }
 
 void Character::reset() {
     for (size_t i = 0; i < 3; i++) {
         position[i] = 0.0f;
-        velocity[i] = 0.0f;
     }
 }

@@ -3,11 +3,13 @@
 
 #include "content/character.h"
 #include "core/camera.h"
+#include "physics/line.h"
 
 struct Player {};
 
 struct State {
     Content::Character players[4];
+    LineSegment segments[10];
 
   public:
     void enter();

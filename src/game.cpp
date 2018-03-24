@@ -7,12 +7,36 @@
 #include "content/character.h"
 #include "core/camera.h"
 #include "game.h"
+#include "types.h"
+#include "physics/line.h"
 
-void State::enter() { players[0].init("/content/character/"); }
+void State::enter() {
+    f32 alpha = 2 * 3.1415f / 10;
+    f32 theta = 0;
+    f32 x = cos(theta) * 5, 
+        y = sin(theta) * 5;
 
+    for(usize i = 0 ; i < 10 ; i++) {
+        theta += alpha;
+        f32 ex = cos(theta) * 5;
+        f32 ey = sin(theta) * 5;
+
+        printf("%d: (%f,%f) -> (%f,%f)\n", 
+            i, x, y, ex, ey);
+
+        segments[i].setup(x, y, ex, ey);
+        segments[i].next = &segments[(i+1)%10];
+        x = ex; y = ey;
+    } 
+
+    players[0].init("/content/character/");
+    players[0].current_segment = &segments[0]; 
+}
+static f32 time = 0;
 State* State::update(float dt) {
     const Uint8* keyboard_state = SDL_GetKeyboardState(NULL);
-    players[0].update(dt, keyboard_state);
+    time += dt;
+    players[0].update(time, keyboard_state);
     players[0].draw();
     return this;
 }
@@ -43,7 +67,8 @@ bool Game::update(float dt) {
             break;
         case SDL_KEYDOWN:
         case SDL_KEYUP:
-            printf("key event: %s\n", SDL_GetKeyName(event.key.keysym.sym));
+           if (SDL_GetKeyboardState(NULL)[SDL_SCANCODE_Q]) return true;
+     printf("key event: %s\n", SDL_GetKeyName(event.key.keysym.sym));
             break;
         default:
             break;
