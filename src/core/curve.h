@@ -3,12 +3,21 @@
 #include "types.h"
 #include <SDL2/SDL.h>
 
-struct Curve
+struct TimeCurve
+{
+	f32 t0;
+
+	f32 sample(f32 t) {
+		return t - t0;
+	}
+};
+
+struct LinearCurve
 {
 	f32 t0, t1;
 	f32 y0, y1;
 
-	Curve() : t0(0), t1(1), y0(0), y1(1) {}
+	LinearCurve() : t0(0), t1(1), y0(0), y1(1) {}
 
 	// sample y(t)
 	f32 sample(f32 t) {

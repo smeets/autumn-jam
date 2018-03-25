@@ -11,23 +11,22 @@
 #include "physics/line.h"
 
 void State::enter() {
-    f32 alpha = 2 * 3.1415f / 10;
-    f32 theta = 0;
-    f32 x = cos(theta) * 5, 
-        y = sin(theta) * 5;
+    Vertex box[4] = { Vertex{-4,0}, Vertex{4,0},
+                      Vertex{4, -4}, Vertex{-4, -4} };
 
-    for(usize i = 0 ; i < 10 ; i++) {
-        theta += alpha;
-        f32 ex = cos(theta) * 5;
-        f32 ey = sin(theta) * 5;
+    Vertex box2[4] = { Vertex{5, 10}, Vertex{6, 10},
+                       Vertex{6, 0}, Vertex{5, 0} };
 
-        printf("%d: (%f,%f) -> (%f,%f)\n", 
-            i, x, y, ex, ey);
+    for (usize i = 0; i < 4; ++i) {
+        segments[i].setup(box[i], box[((i+1)%4)]);
+        segments[i].next = &segments[(i+1)%4];
 
-        segments[i].setup(x, y, ex, ey);
-        segments[i].next = &segments[(i+1)%10];
-        x = ex; y = ey;
-    } 
+        segments[4+i].setup(box2[i], box2[(i+1)%4]);
+        segments[4+i].next = &segments[4+(i+1)%4];
+    }
+
+    segments[8].setup(-100,-100,-100,-100);
+    segments[9].setup(-100,-100,-100,-100);
 
     players[0].init("/content/character/");
     players[0].current_segment = &segments[0]; 
@@ -35,8 +34,11 @@ void State::enter() {
 static f32 time = 0;
 State* State::update(float dt) {
     const Uint8* keyboard_state = SDL_GetKeyboardState(NULL);
-    time += dt;
+    time += dt; //0.008f;
+    
     players[0].update(time, keyboard_state);
+    players[0].collision(time, segments);
+
     players[0].draw();
     return this;
 }
