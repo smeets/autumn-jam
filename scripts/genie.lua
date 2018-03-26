@@ -9,24 +9,25 @@ local BUILD_DIR = path.join(JAM_DIR, ".build")
 local THIRD_PARTY_DIR = path.join(JAM_DIR, "3rdparty")
 
 SDL2_DIR = os.getenv("SDL2_DIR")
-BX_DIR = os.getenv("BX_DIR") or path.getabsolute(path.join(JAM_DIR, "../bx"))
-BIMG_DIR = os.getenv("BIMG_DIR") or path.getabsolute(path.join(JAM_DIR, "../bimg"))
-BGFX_DIR = os.getenv("BGFX_DIR") or path.getabsolute(path.join(JAM_DIR, "../bgfx"))
+BGFX_DIR = path.join(THIRD_PARTY_DIR, "bgfx")
+BX_DIR   = path.join(THIRD_PARTY_DIR, "bx")
+BIMG_DIR = path.join(THIRD_PARTY_DIR, "bimg")
 
 function exit()
 	print("For more info see: https://github.com/smeets/autumn-jam")
 	os.exit()
 end
 
-function check_dep(lib, dir)
-	if not os.isdir(dir) then
-		print(lib .. " not found at " .. dir)
+function check_dep(lib)
+	if not os.isdir(path.join(THIRD_PARTY_DIR, lib)) then
+		print(lib .. " not found")
 		exit()
 	end
 end
-check_dep("bgfx", 		 BGFX_DIR)
-check_dep("bx", 		 BX_DIR)
-check_dep("bimg", 		 BIMG_DIR)
+check_dep("bgfx")
+check_dep("bx")
+check_dep("bimg")
+check_dep("vg-renderer")
 
 solution "autumn_jam"
 	configuration {"linux-*"}
@@ -76,15 +77,13 @@ solution "autumn_jam"
 
 	includedirs {
 		"../src",
-		path.join(BGFX_DIR, "include"),
-		path.join(BX_DIR,   "include"),
-		path.join(THIRD_PARTY_DIR, "vg-renderer/include")
+		path.join(THIRD_PARTY_DIR, "**/include")
 	}
 
 	language "C++"
 	startproject "i_dont_know"
 
-dofile (path.join(BX_DIR, "scripts/toolchain.lua"))
+dofile (path.join(THIRD_PARTY_DIR, "bx/scripts/toolchain.lua"))
 if not toolchain(BUILD_DIR, THIRD_PARTY_DIR) then
 	return -- no action specified
 end
@@ -105,12 +104,7 @@ project "i_dont_know"
 	}
 
 	includedirs {
-		path.join(BX_DIR, 	"include"),
-		path.join(BIMG_DIR,	"include"),
-		path.join(BGFX_DIR, "include"),
-		path.join(BGFX_DIR, "3rdparty"),
-		path.join(SDL2_DIR, "include"),
-		path.join(THIRD_PARTY_DIR, "vg-renderer/include")
+		path.join(THIRD_PARTY_DIR, "**/include"),
 	}
 
 	files {
@@ -133,11 +127,12 @@ project "i_dont_know"
 	configuration { "vs*" }
 		debugdir(path.join(BUILD_DIR, "win64_" .. _ACTION, "bin"))
 
-dofile(path.join(BGFX_DIR,   "scripts/bgfx.lua"))
+
+dofile(path.join(THIRD_PARTY_DIR, "bgfx/scripts/bgfx.lua"))
 
 group "libs"
 bgfxProject("", "StaticLib", {})
 
-dofile(path.join(BX_DIR,   "scripts/bx.lua"))
-dofile(path.join(BIMG_DIR, "scripts/bimg.lua"))
-dofile(path.join(BIMG_DIR, "scripts/bimg_decode.lua"))
+dofile(path.join(THIRD_PARTY_DIR, "bx/scripts/bx.lua"))
+dofile(path.join(THIRD_PARTY_DIR, "bimg/scripts/bimg.lua"))
+dofile(path.join(THIRD_PARTY_DIR, "bimg/scripts/bimg_decode.lua"))

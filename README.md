@@ -18,22 +18,15 @@ $ tree
 ```
 
 ## Dependencies
-**External**
  - [bgfx](https://github.com/bkaradzic/bgfx)
  - [bx](https://github.com/bkaradzic/bx)
  - [bimg](https://github.com/bkaradzic/bimg)
  - [SDL2](http://www.libsdl.org/download-2.0.php)
-
-**Internal**
  - [vg-renderer](https://github.com/jdryg/vg-renderer)
 
 ## Building
  - `git clone https://github.com/smeets/autumn-jam`
- - get dependencies if you need (clone into parent folder of this repo):
- - - `git clone https://github.com/bkaradzic/bx`
- - - `git clone https://github.com/bkaradzic/bgfx`
- - - `git clone https://github.com/bkaradzic/bimg`,
- - - or use environment vars `{BGFX,BX,BIMG}_DIR` to specify the paths
+ - `git submodule update --init`
  - install SDL2 (only linux/mac, windows is included)
 
 ### Windows

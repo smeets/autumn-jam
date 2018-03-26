@@ -92,7 +92,7 @@ int main(/*int argc, char** argv*/) {
     while (!exit) {
 
         bgfx::dbgTextClear();
-        bgfx::dbgTextPrintf(0, 1, 0x0f, "Controls: Space = Jump, Q = Exit");
+        bgfx::dbgTextPrintf(0, 0, 0x0f, "Controls: Space = Jump, Q = Exit");
 
         exit = game.update(0.016f);
 

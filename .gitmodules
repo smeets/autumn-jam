@@ -1,3 +1,12 @@
 [submodule "3rdparty/vg-renderer"]
 	path = 3rdparty/vg-renderer
 	url = https://github.com/jdryg/vg-renderer/
+[submodule "3rdparty/bgfx"]
+	path = 3rdparty/bgfx
+	url = https://github.com/bkaradzic/bgfx
+[submodule "3rdparty/bx"]
+	path = 3rdparty/bx
+	url = https://github.com/bkaradzic/bx
+[submodule "3rdparty/bimg"]
+	path = 3rdparty/bimg
+	url = https://github.com/bkaradzic/bimg
