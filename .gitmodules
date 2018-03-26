@@ -1,0 +1,3 @@
+[submodule "3rdparty/vg-renderer"]
+	path = 3rdparty/vg-renderer
+	url = https://github.com/jdryg/vg-renderer/
