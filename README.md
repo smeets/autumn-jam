@@ -3,18 +3,14 @@ a venture into the unknown
 ## Structure
 
 ```bash
-$ tree
-├───README.md
-├───tools
-│   └───genie{_linux, _mac, .exe}
-├───scripts
-│   └───genie.lua
-├───.build
-│   └───projects
-├───3rdparty
-│   └───SDL2 (windows)
-|	└───vg-renderer
-├───src
+$ tree -L 1
+├── 3rdparty    (dependencies)
+├── data        (assets)
+├── README.md
+├── scripts     (build scripts)
+├── shaders     (shader sources)
+├── src
+└── tools       (required binaries)
 ```
 
 ## Dependencies
