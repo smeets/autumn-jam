@@ -9,17 +9,17 @@
 
 namespace Content {
 
-typedef enum {GROUNDED, JUMPING, SWINGING} CharacterState;
 struct Character {
     float position[3];
-    
+
+    // Serie<Curve,Segment> history;
+    // history.seek(t) --> Curve,Segment
+    // history.present() --> Curve,Segment
     LineSegment* current_segment;
     JumpSegment* jump_segment;
 
     LinearCurve movement; // reset by switching line segment
     TimeCurve   jump;     // reset by jumping
-
-    CharacterState state;
 
     bgfx::VertexBufferHandle vbh;
     bgfx::IndexBufferHandle ibh;
@@ -33,4 +33,5 @@ struct Character {
     void collision(float t, LineSegment segments[10]);
     void reset();
 };
+
 }

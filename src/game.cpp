@@ -1,4 +1,5 @@
 #include <SDL2/SDL.h>
+#include <vg/vg.h>
 #include <bgfx/bgfx.h>
 #include <bx/math.h>
 #include <stdio.h>
@@ -10,12 +11,15 @@
 #include "types.h"
 #include "physics/line.h"
 
-void State::enter() {
-    Vertex box[4] = { Vertex{-4,0}, Vertex{4,0},
+static Vertex box[4] = { Vertex{-4,0}, Vertex{4,0},
                       Vertex{4, -4}, Vertex{-4, -4} };
 
-    Vertex box2[4] = { Vertex{5, 10}, Vertex{6, 10},
-                       Vertex{6, 0}, Vertex{5, 0} };
+static Vertex box2[4] = { Vertex{5, 10}, Vertex{6, 10},
+                   Vertex{6, 0}, Vertex{5, 0} };
+void State::enter() {
+
+
+    context = vg::createContext(0, &allocator);
 
     for (usize i = 0; i < 4; ++i) {
         segments[i].setup(box[i], box[((i+1)%4)]);
@@ -29,17 +33,38 @@ void State::enter() {
     segments[9].setup(-100,-100,-100,-100);
 
     players[0].init("/content/character/");
-    players[0].current_segment = &segments[0]; 
+    players[0].current_segment = &segments[0];
 }
-static f32 time = 0;
+void State::debug_draw()
+{
+    vg::beginFrame(context, 800, 600, 8.0f);
+    vg::beginPath(context);
+    vg::moveTo(context, box[0].x, box[0].y);
+    for (usize i = 0; i < 4; i++)
+        vg::lineTo(context, box[(i+1)%4].x, box[(i+1)%4].y);
+    vg::strokePath(context, vg::Colors::Blue, 0.25f, 0);
+
+    vg::beginPath(context);
+    vg::moveTo(context, box2[0].x, box2[0].y);
+    for (usize i = 0; i < 4; i++)
+        vg::lineTo(context, box2[(i+1)%4].x, box2[(i+1)%4].y);
+    vg::strokePath(context, vg::Colors::Red, 0.25f, 0);
+
+    vg::closePath(context);
+    vg::endFrame(context);
+}
+
 State* State::update(float dt) {
+    static f32 time = 0;
+
     const Uint8* keyboard_state = SDL_GetKeyboardState(NULL);
     time += dt; //0.008f;
-    
+
     players[0].update(time, keyboard_state);
     players[0].collision(time, segments);
 
     players[0].draw();
+
     return this;
 }
 
@@ -76,6 +101,8 @@ bool Game::update(float dt) {
             break;
         }
     }
+
+    current_state->debug_draw();
 
     bgfx::setViewRect(0, 0, 0, uint16_t(camera.screen_width),
                       uint16_t(camera.screen_height));

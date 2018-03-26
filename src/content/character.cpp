@@ -34,7 +34,7 @@ double clamp(double x, double limit) {
     else return x;
 }
 
-static f32 VELOCITY = 4.0f; // 
+static f32 VELOCITY = 4.0f; //
 
 void Character::init(const char* path) {
     reset();
@@ -113,10 +113,10 @@ void Character::sample(float t) {
             movement.y0 = 0;
             movement.y1 = 1;
             printf("s=%f,t=%f\n", movement.sample(t), t);
-            printf("(%f,%f) -> (%f,%f) %f m (%f sec)\n", 
-                current_segment->x.p, 
-                current_segment->y.p, 
-                next->x.p + next->x.d, 
+            printf("(%f,%f) -> (%f,%f) %f m (%f sec)\n",
+                current_segment->x.p,
+                current_segment->y.p,
+                next->x.p + next->x.d,
                 next->y.p + next->y.d,
                 dist, dist / VELOCITY);
             current_segment = next;
@@ -124,11 +124,11 @@ void Character::sample(float t) {
     } else if (jump_segment != NULL) {
         jump_segment->lerp(jump.sample(t), (f32*)&position);
     }
-    
+
 }
 
 void Character::update(float t, const uint8_t* keyboard_state) {
-    if (keyboard_state[SDL_SCANCODE_SPACE] && 
+    if (keyboard_state[SDL_SCANCODE_SPACE] &&
         jump_segment == NULL) {
         // movement.t1 = t - 0.016f;
         // movement.y1 = movement.y0 + (t - movement.t0) * 1 // 1 = VELOCITY

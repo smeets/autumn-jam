@@ -5,14 +5,12 @@
 MODULE_DIR	 = path.getabsolute("../")
 JAM_DIR		 = path.getabsolute("..")
 
-local AUTUMN_JAM_BUILD_DIR = path.join(JAM_DIR, ".build")
-local AUTUMN_JAM_THIRD_PARTY_DIR = path.join(JAM_DIR, "3rdparty")
-local WIN_INC = path.join(AUTUMN_JAM_THIRD_PARTY_DIR, 'include')
-local WIN_LIB = path.join(AUTUMN_JAM_THIRD_PARTY_DIR, 'lib')
+local BUILD_DIR = path.join(JAM_DIR, ".build")
+local THIRD_PARTY_DIR = path.join(JAM_DIR, "3rdparty")
 
+SDL2_DIR = os.getenv("SDL2_DIR")
 BX_DIR = os.getenv("BX_DIR") or path.getabsolute(path.join(JAM_DIR, "../bx"))
 BIMG_DIR = os.getenv("BIMG_DIR") or path.getabsolute(path.join(JAM_DIR, "../bimg"))
-SDL2_DIR = os.getenv("SDL2_DIR")
 BGFX_DIR = os.getenv("BGFX_DIR") or path.getabsolute(path.join(JAM_DIR, "../bgfx"))
 
 function exit()
@@ -20,21 +18,15 @@ function exit()
 	os.exit()
 end
 
-if not os.isdir(BGFX_DIR) then
-	print("bgfx not found at " .. BGFX_DIR)
-	exit()
+function check_dep(lib, dir)
+	if not os.isdir(dir) then
+		print(lib .. " not found at " .. dir)
+		exit()
+	end
 end
-
-if not os.isdir(BX_DIR) then
-	print("bx not found at " .. BX_DIR)
-	exit()
-end
-
-if not os.isdir(BIMG_DIR) then
-	print("bimg not found at " .. BIMG_DIR)
-	exit()
-end
-
+check_dep("bgfx", 		 BGFX_DIR)
+check_dep("bx", 		 BX_DIR)
+check_dep("bimg", 		 BIMG_DIR)
 
 solution "autumn_jam"
 	configuration {"linux-*"}
@@ -59,10 +51,10 @@ solution "autumn_jam"
 
 	configuration { "vs*" }
 		includedirs {
-			WIN_INC
+			path.join(THIRD_PARTY_DIR, "SDL2/include")
 		}
 		libdirs {
-				path.join(WIN_LIB, "SDL2/x64")
+			path.join(THIRD_PARTY_DIR, "SDL2/lib/x64")
 		}
 
 	configuration{}
@@ -80,20 +72,20 @@ solution "autumn_jam"
 		"NoEditAndContinue",		-- rip visual studio
 	}
 
-	location(path.join(AUTUMN_JAM_BUILD_DIR, _ACTION))
+	location(path.join(BUILD_DIR, _ACTION))
 
 	includedirs {
 		"../src",
-		"../external",
 		path.join(BGFX_DIR, "include"),
-		path.join(BX_DIR, "include")
+		path.join(BX_DIR,   "include"),
+		path.join(THIRD_PARTY_DIR, "vg-renderer/include")
 	}
 
 	language "C++"
 	startproject "i_dont_know"
 
 dofile (path.join(BX_DIR, "scripts/toolchain.lua"))
-if not toolchain(AUTUMN_JAM_BUILD_DIR, AUTUMN_JAM_THIRD_PARTY_DIR) then
+if not toolchain(BUILD_DIR, THIRD_PARTY_DIR) then
 	return -- no action specified
 end
 
@@ -118,12 +110,13 @@ project "i_dont_know"
 		path.join(BGFX_DIR, "include"),
 		path.join(BGFX_DIR, "3rdparty"),
 		path.join(SDL2_DIR, "include"),
-		AUTUMN_JAM_THIRD_PARTY_DIR
+		path.join(THIRD_PARTY_DIR, "vg-renderer/include")
 	}
 
 	files {
 		path.join(JAM_DIR, "src/main.cpp"),
-		path.join(JAM_DIR, "src/**")
+		path.join(JAM_DIR, "src/**"),
+		path.join(THIRD_PARTY_DIR, "vg-renderer/src/**")
 	}
 
 	configuration "Debug"
@@ -138,7 +131,7 @@ project "i_dont_know"
 		links { "GL" }
 
 	configuration { "vs*" }
-		debugdir(path.join(AUTUMN_JAM_BUILD_DIR, "win64_" .. _ACTION, "bin"))
+		debugdir(path.join(BUILD_DIR, "win64_" .. _ACTION, "bin"))
 
 dofile(path.join(BGFX_DIR,   "scripts/bgfx.lua"))
 

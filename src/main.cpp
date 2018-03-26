@@ -1,12 +1,13 @@
-#include <SDL2/SDL.h>
-#include <bgfx/bgfx.h>
-#include <bx/math.h>
+#include "game.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <SDL2/SDL.h>
+#include <bgfx/bgfx.h>
+#include <bx/bx.h>
+#include <bx/allocator.h>
+#include <vg/vg.h>
 #undef main
 
-#include "game.h"
-#include <bx/os.h>
 
 BX_PRAGMA_DIAGNOSTIC_PUSH()
 BX_PRAGMA_DIAGNOSTIC_IGNORED_CLANG("-Wextern-c-compat")
@@ -88,11 +89,14 @@ int main(/*int argc, char** argv*/) {
     Game game;
     game.init();
 
+
+    bgfx::setViewMode(0, bgfx::ViewMode::Sequential);
     while (!exit) {
-        exit = game.update(0.016f);
 
         bgfx::dbgTextClear();
-        bgfx::dbgTextPrintf(0, 1, 0x0f, "Controls: Left, Right, Up = Jump");
+        bgfx::dbgTextPrintf(0, 1, 0x0f, "Controls: Space = Jump, Q = Exit");
+
+        exit = game.update(0.016f);
 
         bgfx::frame();
     }

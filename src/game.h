@@ -4,15 +4,20 @@
 #include "content/character.h"
 #include "core/camera.h"
 #include "physics/line.h"
+#include <bx/allocator.h>
+#include <vg/vg.h>
 
 struct Player {};
 
 struct State {
     Content::Character players[4];
     LineSegment segments[10];
+    bx::DefaultAllocator allocator;
+    vg::Context* context;
 
   public:
     void enter();
+    void debug_draw();
     State* update(float dt);
     void exit();
 };
