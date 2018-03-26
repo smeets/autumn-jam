@@ -3,13 +3,12 @@ a venture into the unknown
 ## Structure
 
 ```bash
-$ tree -L 1
+$ tree
 ├── 3rdparty    (dependencies)
 ├── data        (assets)
-├── README.md
 ├── scripts     (build scripts)
 ├── shaders     (shader sources)
-├── src
+├── src         (game source code)
 └── tools       (required binaries)
 ```
 
