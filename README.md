@@ -12,27 +12,32 @@ $ tree
 ├───.build
 │   └───projects
 ├───3rdparty
-│   └───SDL2-2.0.6 (windows)
+│   └───SDL2 (windows)
+|	└───vg-renderer
 ├───src
 ```
 
 ## Dependencies
+**External**
  - [bgfx](https://github.com/bkaradzic/bgfx)
  - [bx](https://github.com/bkaradzic/bx)
  - [bimg](https://github.com/bkaradzic/bimg)
  - [SDL2](http://www.libsdl.org/download-2.0.php)
 
+**Internal**
+ - [vg-renderer](https://github.com/jdryg/vg-renderer)
+
 ## Building
  - `git clone https://github.com/smeets/autumn-jam`
- - get dependencies if you need (clone into same parent folder as this repo):
-  - `git clone https://github.com/bkaradzic/bx`
-  - `git clone https://github.com/bkaradzic/bgfx`
-  - `git clone https://github.com/bkaradzic/bimg`,
- - or use environment vars `{BGFX,BX,BIMG}_DIR` to specify the paths
+ - get dependencies if you need (clone into parent folder of this repo):
+ - - `git clone https://github.com/bkaradzic/bx`
+ - - `git clone https://github.com/bkaradzic/bgfx`
+ - - `git clone https://github.com/bkaradzic/bimg`,
+ - - or use environment vars `{BGFX,BX,BIMG}_DIR` to specify the paths
  - install SDL2 (only linux/mac, windows is included)
 
 ### Windows
-There exists a `Makefile.windows` with: `project`, `build`, `start`, `shaders` and `clean` targets.
+Use `Makefile.windows`: `project`, `build`, `start`, `shaders` and `clean`.
 
  - `cd autumn-jam`
  - Generate vs2017 sources: `nmake /f scripts\Makefile.windows project`

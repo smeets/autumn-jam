@@ -1,53 +1,51 @@
 #include <SDL2/SDL.h>
-#include <vg/vg.h>
 #include <bgfx/bgfx.h>
 #include <bx/math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <vg/vg.h>
 
 #include "content/character.h"
 #include "core/camera.h"
 #include "game.h"
-#include "types.h"
 #include "physics/line.h"
+#include "types.h"
 
-static Vertex box[4] = { Vertex{-4,0}, Vertex{4,0},
-                      Vertex{4, -4}, Vertex{-4, -4} };
+static Vertex box[4] = {Vertex{-4, 0}, Vertex{4, 0}, Vertex{4, -4},
+                        Vertex{-4, -4}};
 
-static Vertex box2[4] = { Vertex{5, 10}, Vertex{6, 10},
-                   Vertex{6, 0}, Vertex{5, 0} };
+static Vertex box2[4] = {Vertex{5, 10}, Vertex{6, 10}, Vertex{6, 0},
+                         Vertex{5, 0}};
 void State::enter() {
-
 
     context = vg::createContext(0, &allocator);
 
     for (usize i = 0; i < 4; ++i) {
-        segments[i].setup(box[i], box[((i+1)%4)]);
-        segments[i].next = &segments[(i+1)%4];
+        segments[i].setup(box[i], box[((i + 1) % 4)]);
+        segments[i].next = &segments[(i + 1) % 4];
 
-        segments[4+i].setup(box2[i], box2[(i+1)%4]);
-        segments[4+i].next = &segments[4+(i+1)%4];
+        segments[4 + i].setup(box2[i], box2[(i + 1) % 4]);
+        segments[4 + i].next = &segments[4 + (i + 1) % 4];
     }
 
-    segments[8].setup(-100,-100,-100,-100);
-    segments[9].setup(-100,-100,-100,-100);
+    segments[8].setup(-100, -100, -100, -100);
+    segments[9].setup(-100, -100, -100, -100);
 
     players[0].init("/content/character/");
     players[0].current_segment = &segments[0];
 }
-void State::debug_draw()
-{
+void State::debug_draw() {
     vg::beginFrame(context, 800, 600, 8.0f);
     vg::beginPath(context);
     vg::moveTo(context, box[0].x, box[0].y);
     for (usize i = 0; i < 4; i++)
-        vg::lineTo(context, box[(i+1)%4].x, box[(i+1)%4].y);
+        vg::lineTo(context, box[(i + 1) % 4].x, box[(i + 1) % 4].y);
     vg::strokePath(context, vg::Colors::Blue, 0.25f, 0);
 
     vg::beginPath(context);
     vg::moveTo(context, box2[0].x, box2[0].y);
     for (usize i = 0; i < 4; i++)
-        vg::lineTo(context, box2[(i+1)%4].x, box2[(i+1)%4].y);
+        vg::lineTo(context, box2[(i + 1) % 4].x, box2[(i + 1) % 4].y);
     vg::strokePath(context, vg::Colors::Red, 0.25f, 0);
 
     vg::closePath(context);
@@ -58,7 +56,7 @@ State* State::update(float dt) {
     static f32 time = 0;
 
     const Uint8* keyboard_state = SDL_GetKeyboardState(NULL);
-    time += dt; //0.008f;
+    time += dt; // 0.008f;
 
     players[0].update(time, keyboard_state);
     players[0].collision(time, segments);
@@ -94,8 +92,9 @@ bool Game::update(float dt) {
             break;
         case SDL_KEYDOWN:
         case SDL_KEYUP:
-           if (SDL_GetKeyboardState(NULL)[SDL_SCANCODE_Q]) return true;
-     printf("key event: %s\n", SDL_GetKeyName(event.key.keysym.sym));
+            if (SDL_GetKeyboardState(NULL)[SDL_SCANCODE_Q])
+                return true;
+            printf("key event: %s\n", SDL_GetKeyName(event.key.keysym.sym));
             break;
         default:
             break;

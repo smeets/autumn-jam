@@ -1,13 +1,12 @@
 #include "game.h"
-#include <stdio.h>
-#include <stdlib.h>
 #include <SDL2/SDL.h>
 #include <bgfx/bgfx.h>
-#include <bx/bx.h>
 #include <bx/allocator.h>
+#include <bx/bx.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <vg/vg.h>
 #undef main
-
 
 BX_PRAGMA_DIAGNOSTIC_PUSH()
 BX_PRAGMA_DIAGNOSTIC_IGNORED_CLANG("-Wextern-c-compat")
@@ -88,7 +87,6 @@ int main(/*int argc, char** argv*/) {
 
     Game game;
     game.init();
-
 
     bgfx::setViewMode(0, bgfx::ViewMode::Sequential);
     while (!exit) {
