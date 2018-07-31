@@ -18,16 +18,15 @@ function exit()
 	os.exit()
 end
 
-function check_dep(lib)
-	if not os.isdir(path.join(THIRD_PARTY_DIR, lib)) then
+function check_dep_include(lib)
+  dep = path.join(THIRD_PARTY_DIR, lib, "include")
+	if not os.isdir(dep) then
 		print(lib .. " not found")
 		exit()
+  else
+    return dep
 	end
 end
-check_dep("bgfx")
-check_dep("bx")
-check_dep("bimg")
-check_dep("vg-renderer")
 
 solution "autumn_jam"
 	configuration {"linux-*"}
@@ -77,7 +76,10 @@ solution "autumn_jam"
 
 	includedirs {
 		"../src",
-		path.join(THIRD_PARTY_DIR, "**/include")
+    check_dep_include("bgfx"),
+    check_dep_include("bx"),
+    check_dep_include("bimg"),
+    check_dep_include("vg-renderer")
 	}
 
 	language "C++"
@@ -101,10 +103,6 @@ project "i_dont_know"
 		"bimg",
 		"bimg_decode",
 		"SDL2"
-	}
-
-	includedirs {
-		path.join(THIRD_PARTY_DIR, "**/include"),
 	}
 
 	files {
